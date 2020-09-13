@@ -12,6 +12,7 @@ let app;
 let isLoad = false;
 let circleObjList = new Array();
 let socket;
+let pingPongTimer = null;
 
 // データ
 const assetsUrl = "../assets/";
@@ -27,6 +28,7 @@ PIXI.loader.load(function (loader, resources) {
     socket = new WebSocket("WS://" + window.location.host + "/api/");
     socket.onopen = function () {
       console.log("Connection OK");
+      checkConnection();
     };
     main(resources);
   }
@@ -59,15 +61,25 @@ function main(resources) {
   // 情報が届いて更新する処理
   socket.onmessage = function (e) {
     console.log(e.data);
-    update(JSON.parse(e.data));
+    let data = JSON.parse(e.data);
+    if (data.Job == "pong") {
+      console.log("pong");
+      if (pingPongTimer) {
+        clearTimeout(pingPongTimer);
+      }
+      return checkConnection();
+    }
+    if (data.Job == "view") {
+      update(data);
+    }
   };
   function update(data) {
-    switch (data.DataType) {
+    switch (data.EarthData.DataType) {
       case "hoge":
         console.log("ok");
         break;
       case "add":
-        if (data.ObjType == "circle") {
+        if (data.EarthData.ObjType == "circle") {
           let obj = new CircleBuilding(
             resources,
             textureList[0],
@@ -96,6 +108,25 @@ function animate() {
     circleObjList[i].update();
   }
   window.requestAnimationFrame(animate);
+}
+
+function checkConnection() {
+  setTimeout(() => {
+    socket.send(
+      JSON.stringify({
+        Job: "ping",
+        EarthData: {
+          DataType: "",
+          ObjType: "",
+        },
+      })
+    );
+    pingPongTimer = setTimeout(() => {
+      console.log("再接続を試みます");
+      pingPongTimer = null;
+      socket.reconnect();
+    }, 1000);
+  }, 30000);
 }
 
 class CircleBuilding {
