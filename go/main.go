@@ -18,7 +18,6 @@ var broadcast = make(chan Message)
 // WebSocket 更新用
 var upgrader = websocket.Upgrader{}
 
-// クライアントからは JSON 形式で受け取る
 type Message struct {
 	DataType string `json:DataType`
 	ObjType  string `json:ObjType`
@@ -31,14 +30,12 @@ func HandleClients(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("error upgrading GET request to a websocket::", err)
 	}
-	// websocket を閉じる
 	defer websocket.Close()
 
 	clients[websocket] = true
 
 	for {
 		var message Message
-		// メッセージ読み込み
 		err := websocket.ReadJSON(&message)
 		fmt.Println(message)
 		if err != nil {
@@ -46,7 +43,6 @@ func HandleClients(w http.ResponseWriter, r *http.Request) {
 			delete(clients, websocket)
 			break
 		}
-		// メッセージを送る
 		broadcast <- message
 	}
 }
@@ -60,7 +56,6 @@ func main() {
 	http.HandleFunc("/status", statusOnServer)
 
 	log.Println("Server Starting... PORT:", port)
-	// ゴルーチンで起動
 	go broadcastMessagesToClients()
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
@@ -72,11 +67,8 @@ func main() {
 func broadcastMessagesToClients() {
 	log.Println("broadcastMessageToClients is run")
 	for {
-		// メッセージ受け取り
 		message := <-broadcast
-		// クライアントの数だけループ
 		for client := range clients {
-			//　書き込む
 			err := client.WriteJSON(message)
 			if err != nil {
 				log.Printf("error occurred while writing message to client: %v", err)
