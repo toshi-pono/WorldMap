@@ -6,10 +6,12 @@ const SCREEN_SETTING = {
 const CENTOR = { x: SCREEN_SETTING.width / 2, y: SCREEN_SETTING.height / 2 };
 const MAIN_RADIUS = 150;
 const EX_RADIUS = MAIN_RADIUS * 1.9;
+
 // 変数の宣言
 let app;
 let isLoad = false;
 let circleObjList = new Array();
+let socket;
 
 // データ
 const assetsUrl = "../assets/";
@@ -22,7 +24,10 @@ PIXI.loader.add("building1", "../assets/buta.png");
 
 PIXI.loader.load(function (loader, resources) {
   if (isLoad == true) {
-    console.log(resources);
+    socket = new WebSocket("WS://" + window.location.host + "/api/");
+    socket.onopen = function () {
+      console.log("Connection OK");
+    };
     main(resources);
   }
 });
@@ -50,10 +55,51 @@ function main(resources) {
 
   // createCircle
   mainContainer.addChild(new MainCircle(CENTOR, MAIN_RADIUS).pixi);
+
+  // 情報が届いて更新する処理
+  socket.onmessage = function (e) {
+    console.log(e.data);
+    update(JSON.parse(e.data));
+  };
+  function update(data) {
+    switch (data.DataType) {
+      case "hoge":
+        console.log("ok");
+        break;
+      case "add":
+        if (data.ObjType == "circle") {
+          let obj = new CircleBuilding(
+            resources,
+            textureList[0],
+            MAIN_RADIUS,
+            100,
+            CENTOR,
+            0
+          );
+          circleObjList.push(obj);
+          mainContainer.addChild(obj.pixi);
+        }
+        break;
+      case "remove":
+        break;
+      default:
+        break;
+    }
+  }
+  animate();
+}
+
+function animate() {
+  // アニメーション
+  let listSize = circleObjList.length;
+  for (let i = 0; i < listSize; i++) {
+    circleObjList[i].update();
+  }
+  window.requestAnimationFrame(animate);
 }
 
 class CircleBuilding {
-  constructor(resources, textureData, radius, angle, centor) {
+  constructor(resources, textureData, radius, angle, centor, speed) {
     this.pixi = new PIXI.Sprite(resources[textureData.name].texture);
     this.pixi.anchor.x = 0.5;
     this.pixi.anchor.y = 1;
@@ -63,10 +109,11 @@ class CircleBuilding {
     this.centor = centor;
     this.radius = radius;
     this.angle = angle;
+    this.speed = speed;
     this.draw();
   }
-  rotate(rad) {
-    this.angle += rad;
+  update() {
+    this.angle += this.speed;
     this.angle %= 360;
     this.draw();
   }
