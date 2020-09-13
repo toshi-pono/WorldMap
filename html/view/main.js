@@ -16,12 +16,58 @@ let pingPongTimer = null;
 
 // データ
 const assetsUrl = "../assets/";
+console.log(assetsUrl);
 let textureList = [
-  { name: "building1", url: assetsUrl + "buta.png", width: 100, height: 100 },
+  {
+    name: "building1",
+    url: assetsUrl + "building1.PNG",
+    width: 66,
+    height: 100,
+  },
+  {
+    name: "building2",
+    url: assetsUrl + "building2.PNG",
+    width: 66,
+    height: 100,
+  },
+  {
+    name: "home1",
+    url: assetsUrl + "home1.PNG",
+    width: 70,
+    height: 70,
+  },
+  {
+    name: "tower1",
+    url: assetsUrl + "tower1.PNG",
+    width: 100,
+    height: 200,
+  },
+];
+
+let flyTextureList = [
+  {
+    name: "fly1",
+    url: assetsUrl + "fly1.PNG",
+    width: 100,
+    height: 75,
+    speed: 30,
+  },
+  {
+    name: "fly2",
+    url: assetsUrl + "fly2.PNG",
+    width: 100,
+    height: 75,
+    speed: 10,
+  },
 ];
 
 // 読み込みからの処理
-PIXI.loader.add("building1", "../assets/buta.png");
+for (let i = 0; i < textureList.length; i++) {
+  PIXI.loader.add(textureList[i].name, textureList[i].url);
+}
+for (let i = 0; i < flyTextureList.length; i++) {
+  PIXI.loader.add(flyTextureList[i].name, flyTextureList[i].url);
+}
 
 PIXI.loader.load(function (loader, resources) {
   if (isLoad == true) {
@@ -82,11 +128,25 @@ function main(resources) {
         if (data.EarthData.ObjType == "circle") {
           let obj = new CircleBuilding(
             resources,
-            textureList[0],
-            MAIN_RADIUS,
-            100,
+            textureList[rand(4)],
+            MAIN_RADIUS - 5,
+            rand(360),
             CENTOR,
+            0,
             0
+          );
+          circleObjList.push(obj);
+          mainContainer.addChild(obj.pixi);
+        } else if (data.EarthData.ObjType == "flycircle") {
+          let num = rand(2);
+          let obj = new CircleBuilding(
+            resources,
+            flyTextureList[num],
+            EX_RADIUS + rand(50, -50),
+            rand(360),
+            CENTOR,
+            flyTextureList[num].speed,
+            2
           );
           circleObjList.push(obj);
           mainContainer.addChild(obj.pixi);
@@ -130,22 +190,32 @@ function checkConnection() {
 }
 
 class CircleBuilding {
-  constructor(resources, textureData, radius, angle, centor, speed) {
+  constructor(resources, textureData, radius, angle, centor, speed, type) {
     this.pixi = new PIXI.Sprite(resources[textureData.name].texture);
     this.pixi.anchor.x = 0.5;
     this.pixi.anchor.y = 1;
     this.pixi.width = textureData.width;
     this.pixi.height = textureData.height;
     this.pixi.zIndex = 5;
+    if (type == 1) {
+      this.pixi.zIndex = 6;
+    } else if (type == 2) {
+      this.pixi.zIndex = 4;
+    }
     this.centor = centor;
     this.radius = radius;
     this.angle = angle;
-    this.speed = speed;
+    let rnd = rand(2) * 2 - 1;
+    if (rnd > 0) {
+      this.pixi.width = -textureData.width;
+    }
+    this.speed = speed * rnd + (rand(10, -10) * speed) / 30;
     this.draw();
   }
   update() {
-    this.angle += this.speed;
-    this.angle %= 360;
+    this.angle += this.speed / 60;
+    if (this.angle > 360) this.angle -= 360;
+    if (this.angle < 0) this.angle += 360;
     this.draw();
   }
   draw() {
@@ -167,4 +237,8 @@ class MainCircle {
     this.pixi.y = centor.y;
     this.pixi.zIndex = 10;
   }
+}
+
+function rand(maxnum, minnum = 0) {
+  return Math.floor(Math.random() * (maxnum - minnum) + minnum);
 }

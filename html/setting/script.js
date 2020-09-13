@@ -18,6 +18,17 @@ window.onload = function () {
       })
     );
   };
+  document.getElementById("button2").onclick = function () {
+    socket.send(
+      JSON.stringify({
+        Job: "view",
+        EarthData: {
+          DataType: "add",
+          ObjType: "flycircle",
+        },
+      })
+    );
+  };
   socket.onmessage = function (e) {
     console.log(e.data);
     let data = JSON.parse(e.data);
