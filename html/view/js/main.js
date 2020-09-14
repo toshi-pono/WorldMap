@@ -1,4 +1,4 @@
-import { CircleBuilding, MainCircle, DrawPass } from "./class.js";
+import { CircleBuilding, MainCircle, DrawPass, RunCar } from "./class.js";
 // 定数の宣言
 const SCREEN_SETTING = {
   width: 1400,
@@ -13,6 +13,7 @@ let app;
 let isLoad = false;
 let circleObjList = new Array();
 let lineObjList = new Array();
+let carObjList = new Array();
 let socket;
 let pingPongTimer = null;
 
@@ -22,6 +23,9 @@ for (let i = 0; i < textureList.length; i++) {
 }
 for (let i = 0; i < flyTextureList.length; i++) {
   PIXI.loader.add(flyTextureList[i].name, flyTextureList[i].url);
+}
+for (let i = 0; i < carTextureList.length; i++) {
+  PIXI.loader.add(carTextureList[i].name, carTextureList[i].url);
 }
 
 PIXI.loader.load(function (loader, resources) {
@@ -123,9 +127,16 @@ function main(resources) {
             mainContainer.addChild(obj.pixi);
           } else if (data.EarthData.ObjType == "path") {
             let obj = new DrawPass(data.EarthData.Path, CENTOR, 0);
-            console.log(obj);
             lineObjList.push({ obj: obj, path: data.EarthData.Path });
             circleContainer.addChild(obj.pixi);
+            let carObj = new RunCar(
+              resources,
+              carTextureList[0],
+              data.EarthData.Path,
+              CENTOR
+            );
+            circleContainer.addChild(carObj.pixi);
+            carObjList.push(carObj);
           }
         }
         break;
@@ -140,9 +151,14 @@ function main(resources) {
 
 function animate() {
   // アニメーション
+  // Hack:listSizeいる？
   let listSize = circleObjList.length;
   for (let i = 0; i < listSize; i++) {
     circleObjList[i].update();
+  }
+  listSize = carObjList.length;
+  for (let i = 0; i < listSize; i++) {
+    carObjList[i].update();
   }
   window.requestAnimationFrame(animate);
 }

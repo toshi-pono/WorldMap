@@ -89,3 +89,13 @@ let flyTextureList = [
     speed: 2,
   },
 ];
+
+let carTextureList = [
+  {
+    name: "car1",
+    url: assetsUrl + "buta.png",
+    width: 70,
+    height: 70,
+    speed: 1,
+  },
+];
