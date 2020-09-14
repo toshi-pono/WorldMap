@@ -31,8 +31,32 @@ let textureList = [
     height: 100,
   },
   {
+    name: "building3",
+    url: assetsUrl + "building3.PNG",
+    width: 66,
+    height: 100,
+  },
+  {
+    name: "building4",
+    url: assetsUrl + "building4.PNG",
+    width: 100,
+    height: 100,
+  },
+  {
     name: "home1",
     url: assetsUrl + "home1.PNG",
+    width: 70,
+    height: 70,
+  },
+  {
+    name: "home2",
+    url: assetsUrl + "home2.PNG",
+    width: 70,
+    height: 70,
+  },
+  {
+    name: "home3",
+    url: assetsUrl + "home3.PNG",
     width: 70,
     height: 70,
   },
@@ -41,6 +65,12 @@ let textureList = [
     url: assetsUrl + "tower1.PNG",
     width: 100,
     height: 200,
+  },
+  {
+    name: "tree1",
+    url: assetsUrl + "tree1.PNG",
+    width: 70,
+    height: 70,
   },
 ];
 
@@ -58,6 +88,20 @@ let flyTextureList = [
     width: 100,
     height: 75,
     speed: 10,
+  },
+  {
+    name: "fly3",
+    url: assetsUrl + "fly3.PNG",
+    width: 100,
+    height: 75,
+    speed: 8,
+  },
+  {
+    name: "cloud",
+    url: assetsUrl + "cloud.PNG",
+    width: 100,
+    height: 75,
+    speed: 2,
   },
 ];
 
@@ -128,7 +172,7 @@ function main(resources) {
         if (data.EarthData.ObjType == "circle") {
           let obj = new CircleBuilding(
             resources,
-            textureList[rand(4)],
+            textureList[rand(textureList.length)],
             MAIN_RADIUS - 5,
             rand(360),
             CENTOR,
@@ -138,7 +182,7 @@ function main(resources) {
           circleObjList.push(obj);
           mainContainer.addChild(obj.pixi);
         } else if (data.EarthData.ObjType == "flycircle") {
-          let num = rand(2);
+          let num = rand(flyTextureList.length);
           let obj = new CircleBuilding(
             resources,
             flyTextureList[num],
