@@ -20,17 +20,28 @@ var (
 // WebSocket 更新用
 var upgrader = websocket.Upgrader{}
 
+// Message websocketで送信されるJsonObj
 type Message struct {
-	Job       string       `json:Job`
-	ID        int          `json:ID`
-	EarthData EarthMessage `json:EarthData`
-}
-type EarthMessage struct {
-	DataType string `json:DataType`
-	ObjType  string `json:ObjType`
+	Job       string       `json:"Job"`
+	ID        int          `json:"ID"`
+	EarthData EarthMessage `json:"EarthData"`
 }
 
-// クライアントのハンドラ
+// EarthMessage 表示データの形式
+type EarthMessage struct {
+	DataType string     `json:"DataType"`
+	ObjType  string     `json:"ObjType"`
+	ObjID    int        `json:"ObjID"`
+	Path     []PathData `json:"Path"`
+}
+
+// PathData 道の表示データ
+type PathData struct {
+	PosX int `json:"PosX"`
+	PosY int `json:"PosY"`
+}
+
+// HandleClients WebSocketクライアントのハンドラ
 func HandleClients(w http.ResponseWriter, r *http.Request) {
 	// websocket の状態を更新
 	websocket, err := upgrader.Upgrade(w, r, nil)

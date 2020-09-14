@@ -29,6 +29,22 @@ window.onload = function () {
       })
     );
   };
+  document.getElementById("button3").onclick = function () {
+    socket.send(
+      JSON.stringify({
+        Job: "view",
+        EarthData: {
+          DataType: "add",
+          ObjType: "path",
+          Path: [
+            { PosX: -200, PosY: -200 },
+            { PosX: 0, PosY: 0 },
+            { PosX: 200, PosY: 0 },
+          ],
+        },
+      })
+    );
+  };
   socket.onmessage = function (e) {
     console.log(e.data);
     let data = JSON.parse(e.data);
