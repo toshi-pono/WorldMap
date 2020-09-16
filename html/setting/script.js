@@ -99,7 +99,7 @@ let flyTextureList = [
 let carTextureList = [
   {
     name: "car1",
-    url: assetsUrl + "buta.png",
+    url: assetsUrl + "car1.PNG",
     width: 70,
     height: 70,
     speed: 1,
@@ -130,7 +130,9 @@ for (let i = 0; i < carTextureList.length; i++) {
 }
 
 // 独自に使うtexture
-PIXI.loader.add("reload", "../assets/reload.png");
+PIXI.loader
+  .add("reload", "../assets/reload.png")
+  .add("path", "../assets/path.png");
 
 PIXI.loader.load(function (loader, resources) {
   if (isLoad == true) {
@@ -177,6 +179,48 @@ function main(resources) {
     changeAllObj();
   });
   app.stage.addChild(reloadObj);
+
+  // path
+  let pathAddObj = new PIXI.Sprite(resources["path"].texture);
+  pathAddObj.width = 100;
+  pathAddObj.height = 100;
+  pathAddObj.x = 75;
+  pathAddObj.y = 1000;
+  pathAddObj.interactive = true;
+  pathAddObj.buttonMode = true;
+  pathAddObj
+    .on("pointerdown", () => {
+      pathAddObj.on("pointermove", (e) => {
+        pathAddObj.x = e.data.getLocalPosition(app.stage).x - 50;
+        pathAddObj.y = e.data.getLocalPosition(app.stage).y - 50;
+        if (pathAddObj.y < 220) {
+          // 追加
+          socket.send(
+            JSON.stringify({
+              Job: "view",
+              EarthData: {
+                DataType: "add",
+                ObjType: "path",
+                Path: [
+                  { PosX: -200, PosY: -200 },
+                  { PosX: 0, PosY: 0 },
+                  { PosX: 200, PosY: 0 },
+                ],
+              },
+            })
+          );
+          pathAddObj.off("pointermove");
+          pathAddObj.x = 75;
+          pathAddObj.y = 1000;
+        }
+      });
+    })
+    .on("pointerup", () => {
+      pathAddObj.off("pointermove");
+      pathAddObj.x = 75;
+      pathAddObj.y = 1000;
+    });
+  app.stage.addChild(pathAddObj);
 
   // obj
   let chooseObjList = [];

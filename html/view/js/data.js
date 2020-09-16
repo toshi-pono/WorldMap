@@ -93,7 +93,7 @@ let flyTextureList = [
 let carTextureList = [
   {
     name: "car1",
-    url: assetsUrl + "buta.png",
+    url: assetsUrl + "car1.PNG",
     width: 70,
     height: 70,
     speed: 1,
