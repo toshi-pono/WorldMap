@@ -4,12 +4,43 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>設定</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: flex;
+        background-color: black;
+        align-items: center;
+        justify-content: center;
+      }
+
+      canvas {
+        display: block;
+        border: 1px solid black;
+        width: 100% !important;
+        height: auto !important;
+      }
+      div {
+        display: block;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.0/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-filters@latest/dist/pixi-filters.js"></script>
   </head>
   <body>
-    <p>設定</p>
-    <button id="button">CircleSend</button>
-    <button id="button2">flySend</button>
-    <button id="button3">Path</button>
-    <script src="script.js"></script>
+    <div id="app">
+      <!-- ここにJSからCanvasが挿入される -->
+    </div>
+    <div style="display: none">
+      <button id="button">CircleSend</button>
+      <button id="button2">flySend</button>
+      <button id="button3">Path</button>
+    </div>
+    <script src="../view/js/data.js"></script>
+    <script src="script.js" type="module"></script>
   </body>
 </html>

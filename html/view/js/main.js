@@ -103,7 +103,7 @@ function main(resources) {
           if (data.EarthData.ObjType == "circle") {
             let obj = new CircleBuilding(
               resources,
-              textureList[rand(textureList.length)],
+              textureList[data.EarthData.ObjID],
               MAIN_RADIUS - 5,
               rand(360),
               CENTOR,
@@ -113,7 +113,7 @@ function main(resources) {
             circleObjList.push(obj);
             mainContainer.addChild(obj.pixi);
           } else if (data.EarthData.ObjType == "flycircle") {
-            let num = rand(flyTextureList.length);
+            let num = data.EarthData.ObjID;
             let obj = new CircleBuilding(
               resources,
               flyTextureList[num],

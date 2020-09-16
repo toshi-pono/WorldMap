@@ -1,7 +1,7 @@
 // データ
 // TODO:jsonで読み込むようにする
 // TODO:データをちゃんと整理する
-const assetsUrl = "../assets/";
+const assetsUrl = "../../assets/";
 let textureList = [
   {
     name: "building1",
